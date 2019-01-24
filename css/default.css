@@ -1,9 +1,10 @@
 html {
-  font-size: 62.5%;
+  font-size: 80%;
 }
 
 body {
   font-size: 1.6rem;
+  font-family: san-serif;
   color: #000;
 }
 
@@ -49,6 +50,13 @@ article .header {
   font-weight: bold;
   color: #000;
   text-decoration: none;
+}
+
+p code {
+  background-color: rgb(250,250,250);
+  border: 1px solid rgb(200,200,200);
+  padding-left: 4px;
+  padding-right: 4px;
 }
 
 @media (max-width: 319px) {
@@ -116,6 +124,8 @@ article .header {
     padding: 0;
   }
   header {
+    display: flex;
+    align-items: center;
     margin: 0 0 3rem;
     padding: 1.2rem 0;
   }
@@ -131,11 +141,11 @@ article .header {
     text-align: right;
   }
   .logo {
+    flex: 1;
     margin: 0;
     text-align: left;
   }
   .logo a {
-    float: left;
-    font-size: 1.8rem;
+    font-size: 2.5rem;
   }
 }
