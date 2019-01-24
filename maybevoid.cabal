@@ -1,7 +1,13 @@
+cabal-version:      2.4
+
 name:               maybevoid
 version:            0.1.0.0
 build-type:         Simple
-cabal-version:      >= 1.10
+license:            BSD-3-Clause
+license-file:       LICENSE
+homepage:           https://maybevoid.com
+author:             Soares Chen
+maintainer:         soares.chen@maybevoid.com
 
 executable site
   main-is:          site.hs
