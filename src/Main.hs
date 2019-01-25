@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+module Main where
+
 import       Data.Monoid (mappend)
 import       Data.Maybe (fromMaybe)
 import       Hakyll
@@ -30,6 +32,12 @@ main = hakyllWith config $ do
       >>= relativizeUrls
 
   match "pages/*" $ do
+    route $ setExtension "html"
+    compile $ pandocCompiler
+      >>= loadAndApplyTemplate "templates/default.html" postCtx
+      >>= relativizeUrls
+
+  match "wiki/*" $ do
     route $ setExtension "html"
     compile $ pandocCompiler
       >>= loadAndApplyTemplate "templates/default.html" postCtx
