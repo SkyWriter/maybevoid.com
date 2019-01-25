@@ -23,10 +23,16 @@ main = hakyllWith config $ do
           csses <- loadAll "css/*.css"
           makeItem $ unlines $ map itemBody csses
 
-  match (fromList ["about.rst", "contact.md", "404.md"]) $ do
+  match (fromList ["404.md"]) $ do
     route   $ setExtension "html"
     compile $ pandocCompiler
       >>= loadAndApplyTemplate "templates/default.html" defaultContext
+      >>= relativizeUrls
+
+  match "pages/*" $ do
+    route $ setExtension "html"
+    compile $ pandocCompiler
+      >>= loadAndApplyTemplate "templates/default.html" postCtx
       >>= relativizeUrls
 
   match "posts/*" $ do
@@ -57,7 +63,6 @@ main = hakyllWith config $ do
       posts <- recentFirst =<< loadAll "posts/*"
       let indexCtx =
             listField "posts" postCtx (return posts) `mappend`
-            constField "title" "Home"                `mappend`
             defaultContext
 
       getResourceBody

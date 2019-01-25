@@ -21,4 +21,7 @@ repl:
 shell:
 	nix-shell --attr env release.nix
 
+release:
+	nix-build release.nix
+
 .PHONY: watch build-src build-site build shell repl

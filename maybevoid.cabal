@@ -10,7 +10,8 @@ author:             Soares Chen
 maintainer:         soares.chen@maybevoid.com
 
 executable site
-  main-is:          site.hs
+  main-is:          Site.hs
+  hs-source-dirs:   src
   build-depends:    base == 4.*
                   , hakyll == 4.12.*
   ghc-options:      -threaded

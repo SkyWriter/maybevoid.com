@@ -6,6 +6,6 @@ mkDerivation {
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [ base hakyll ];
-  license = "unknown";
-  hydraPlatforms = stdenv.lib.platforms.none;
+  homepage = "https://maybevoid.com";
+  license = stdenv.lib.licenses.bsd3;
 }

@@ -6,6 +6,7 @@ body {
   font-size: 1.6rem;
   font-family: san-serif;
   color: #000;
+  min-width: 300px;
 }
 
 header {
@@ -46,10 +47,25 @@ article .header {
   color: #555;
 }
 
+.logo {
+  display: flex;
+}
+
 .logo a {
   font-weight: bold;
   color: #000;
   text-decoration: none;
+}
+
+.logo img {
+  height: 1.5em;
+  vertical-align: middle;
+}
+
+.overview {
+  padding: 0 2em;
+  text-align: center;
+  font-size: 0.9em;
 }
 
 p code {
@@ -57,6 +73,10 @@ p code {
   border: 1px solid rgb(200,200,200);
   padding-left: 4px;
   padding-right: 4px;
+}
+
+p {
+  line-height: 1.3;
 }
 
 @media (max-width: 319px) {
@@ -77,6 +97,7 @@ p code {
   }
   .logo {
     text-align: center;
+    justify-content: center;
     margin: 1rem auto 3rem;
   }
   .logo a {
@@ -106,6 +127,7 @@ p code {
   }
   .logo {
     text-align: center;
+    justify-content: center;
     margin: 1rem auto 3rem;
   }
   .logo a {
@@ -144,6 +166,7 @@ p code {
     flex: 1;
     margin: 0;
     text-align: left;
+    justify-content: left;
   }
   .logo a {
     font-size: 2.5rem;
