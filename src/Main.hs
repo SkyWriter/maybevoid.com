@@ -1,6 +1,7 @@
+{-# LANGUAGE ExplicitForAll #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Main where
+module Main (main) where
 
 import       Data.Monoid (mappend)
 import       Data.Maybe (fromMaybe)
@@ -9,11 +10,33 @@ import       Hakyll
 config :: Configuration
 config = defaultConfiguration
 
+renderHtml :: Rules ()
+renderHtml = do
+  route   $ setExtension "html"
+  compile $ pandocCompiler
+    >>= loadAndApplyTemplate "templates/default.html" defaultContext
+    >>= relativizeUrls
+
+copyFiles :: Rules ()
+copyFiles = do
+  route   idRoute
+  compile copyFileCompiler
+
 main :: IO ()
 main = hakyllWith config $ do
-  match "images/*" $ do
-    route   idRoute
-    compile copyFileCompiler
+  match "404.md" renderHtml
+  match "wiki/*" renderHtml
+  match "pages/*" renderHtml
+
+  match "robots.txt" copyFiles
+  match "images/*" copyFiles
+
+  match "posts/*" $ do
+    route $ setExtension "html"
+    compile $ pandocCompiler
+      >>= loadAndApplyTemplate "templates/post.html"  postContext
+      >>= loadAndApplyTemplate "templates/default.html" postContext
+      >>= relativizeUrls
 
   match "css/*" $ do
     route   idRoute
@@ -25,37 +48,12 @@ main = hakyllWith config $ do
           csses <- loadAll "css/*.css"
           makeItem $ unlines $ map itemBody csses
 
-  match (fromList ["404.md"]) $ do
-    route   $ setExtension "html"
-    compile $ pandocCompiler
-      >>= loadAndApplyTemplate "templates/default.html" defaultContext
-      >>= relativizeUrls
-
-  match "pages/*" $ do
-    route $ setExtension "html"
-    compile $ pandocCompiler
-      >>= loadAndApplyTemplate "templates/default.html" postCtx
-      >>= relativizeUrls
-
-  match "wiki/*" $ do
-    route $ setExtension "html"
-    compile $ pandocCompiler
-      >>= loadAndApplyTemplate "templates/default.html" postCtx
-      >>= relativizeUrls
-
-  match "posts/*" $ do
-    route $ setExtension "html"
-    compile $ pandocCompiler
-      >>= loadAndApplyTemplate "templates/post.html"  postCtx
-      >>= loadAndApplyTemplate "templates/default.html" postCtx
-      >>= relativizeUrls
-
   create ["archive.html"] $ do
     route idRoute
     compile $ do
       posts <- recentFirst =<< loadAll "posts/*"
       let archiveCtx =
-            listField "posts" postCtx (return posts) `mappend`
+            listField "posts" postContext (return posts) `mappend`
             constField "title" "Archives"            `mappend`
             defaultContext
 
@@ -64,13 +62,12 @@ main = hakyllWith config $ do
         >>= loadAndApplyTemplate "templates/default.html" archiveCtx
         >>= relativizeUrls
 
-
   match "index.html" $ do
     route idRoute
     compile $ do
       posts <- recentFirst =<< loadAll "posts/*"
       let indexCtx =
-            listField "posts" postCtx (return posts) `mappend`
+            listField "posts" postContext (return posts) `mappend`
             defaultContext
 
       getResourceBody
@@ -80,13 +77,13 @@ main = hakyllWith config $ do
 
   match "templates/*" $ compile templateBodyCompiler
 
-authorContext :: Context a
+authorContext :: forall a. Context a
 authorContext = field "author" $ \item -> do
   metadata <- getMetadata (itemIdentifier item)
   return $ fromMaybe "Soares Chen" $ lookupString "author" metadata
 
-postCtx :: Context String
-postCtx = mconcat
+postContext :: Context String
+postContext = mconcat
   [ dateField "date" "%B %e, %Y"
   , authorContext
   , defaultContext

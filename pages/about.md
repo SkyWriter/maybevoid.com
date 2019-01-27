@@ -2,14 +2,35 @@
 title: About
 ---
 
-Soares is a research engineer with both strong expertise in industrial software engineering, as well as deep understanding of research topics in computer science. As a polyglot software engineer, Soares have been deeply involved in programming for 15 years. He is proficient in numerious programming languages and paradigms, with particularly strong focus in functional programming.
+MaybeVoid is the personal site for [Soares Chen](/pages/soareschen.html). I blog
+about functional programming in languages including Haskell, Racket, OCaml,
+Rust. I also write about research topics in programming languages including
+Type Theory, Algebraic Effects, Linear Types, and Formal Verification.
 
-In his personal time, Soares has been self studying programming language theory in preparation for pursuing graduate study in the near future. His main research interest is in type theory, and is actively learning topics such as Martin-Löf type theory and linear session types. Soares’ current programming interest is in mastering the three main branches of programming languages - Haskell, ML (OCaml / Standard ML), and Lisp (Racket / Scheme). Soares is also actively learning languages for formal verfication such as Coq and Agda.
+In general, if you understands how the Haskell type `Maybe Void` is equivalent to
+`()`, or if you are interested in finding that out, then you might be interested to
+read my posts here.
 
-Having strong fundamentals in programming languages, Soares can quickly get proficient in any mainstream languages and tools based on work requirements. He has many years of work experience doing functional programming in JavaScript. Soares’ main domain expertise is in web standards and protocols, and is currently an active member of the WebRTC working group. Other than that Soares also have good command in languages including C++ and Python, and have worked on problem domains such as machine learning.
+### Target Audience
+
+This site is mainly targeted towards Haskell enthusiasts with interest to learn
+about Haskell and beyond. I would assume that you have at least some knowledge
+in Haskell, and that you are into functional programming. I write about various
+topics in programming languages, but it would be from the perspective of
+intermediate Haskell programmers who are new to those topics.
+
+### Source Code
+
+This site is powered by [Hakyll](https://jaspervdj.be/hakyll/). The source code
+for this site is open sourced at [GitHub](https://github.com/maybevoid/maybevoid.com).
+
+### Disclaimer
+
+_Content on this site are purely my personal opinions produced
+on my own free time. This site is not affiliated with any organization or
+company that I work with._
 
 ## Contact
 
-I can be reached by email [soares.chen@maybevoid.com](mailto:soares.chen@maybevoid.com).
-I am also active on social media including [Twitter](https://twitter.com/maybevoid) and
-[LinkedIn](https://www.linkedin.com/in/soareschen).
+There is no comment section on this site. If you would like to give any feedback
+or comment, you can reach me through my email [soares.chen@maybevoid.com](mailto:soares.chen@maybevoid.com) or Twitter [\@maybevoid](https://twitter.com/maybevoid).
