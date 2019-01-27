@@ -5,7 +5,7 @@ title: Getting Started Haskell Project with Nix
 One of the most confusing thing when starting a Haskell project
 is on choosing the right toolchain. The Haskell ecosystem offers
 a number of package management solutions, which may be difficult
-for newcomers to choose. While most of the debate is about choosing
+for newcomers to choose. While most debates are about choosing
 between [Stack](https://www.haskellstack.org/) and
 [cabal-install](https://www.haskell.org/cabal/), here I am going
 to introduce starting a Haskell project with
@@ -22,16 +22,24 @@ functional programming principles such as purity.
 
 When introducing new languages to beginners, one of the most painful
 experience is to install a language toolchain on a person's computer.
-Haskell is no exception, and telling people to uninstall Haskell
-Platform and install Stack would only add more confusion. Ideally,
-I'd like to _not_ care about which version of GHC is installed on
-someone's computer, and whether their `cabal` binary is linked to
-the same toolchain we want them to use.
+Haskell is no exception, and telling people for example to uninstall
+Haskell Platform and install Stack would only add more confusion.
+Ideally, I'd like to _not_ care about which version of GHC is
+installed on someone's computer, and whether their `cabal` binary is
+linked to the same toolchain we want them to use.
 
 Nix solves this problem by providing a universal package management
 for everyone. Furthermore the purity property of nix means that
 anyone can build my Haskell project on their machine regardless
 of which version of GHC or cabal is installed.
+
+Comparing to Stack, Nix also have the advantage that we can host
+private Haskell packages, or even private distributions with Nix.
+The expressiveness of Nix makes it possible to add or remove
+packages, apply private patches to packages, use upstream or
+unpublished packages, and pin some packages to specific versions.
+When working on multi-language projects, Nix also makes it easy to
+integrate Haskell projects to a larger system and manage them as a whole.
 
 Having said that, setting up a project with Nix currently takes more
 effort than setting up a project with Haskell-specific tools such
@@ -49,14 +57,14 @@ I will skip the more advanced topics and focus on starting a bare
 minimal Haskell project with Nix.
 
 The first step is to install Nix on your machine following the
-instructions at https://nixos.org/nix/. A quick reference of
-the installation command is as follow:
+instructions at [https://nixos.org/nix/](https://nixos.org/nix/).
+A quick reference of the installation command is as follow:
 
 ```bash
 curl https://nixos.org/nix/install | sh
 ```
 
-After installing Nix, it is recommended that you Nix-install Cabal
+After installing Nix, it is recommended that you install Cabal
 on your system using Nix, so that you can use the `cabal` command
 inside `nix-shell`.
 
@@ -70,7 +78,7 @@ also Cabal globally. Later on I will introduce some ways to include
 cabal directly in a pure Nix environment. However as most of
 the Haskell Nix tutorials out there assume that you have Cabal
 installed globally, it is a good idea to have it so that you
-can follow the other tutorials later on.
+can follow other tutorials later on.
 
 Also note that there is no need to install GHC on your system.
 The Haskell Nix toolchain exposes GHC in both `nix-build` and
@@ -104,7 +112,7 @@ Prelude Control.Lens> ("hello","world")^._2
 ```
 
 We can include multiple Haskell packages into our Nix shell,
-in addition to binary from other Nix packages as well. For
+in addition to executables from other Nix packages as well. For
 example the following command would setup a shell with
 both the `lens` and `mtl` Haskell packages installed,
 as well as including `cabal` and `gdb` inside a pure Nix shell.
@@ -184,7 +192,7 @@ When building real world Haskell projects, we want to create `.nix`
 files in our project directory to manage the build for us. Under the
 hood, Nix would still use `cabal-install` to build the project for us.
 But just as with the quick hacks, we use Nix to manage the Haskell
-dependency for us, instead of using Stack or Cabal.
+dependencies for us, instead of using Stack or Cabal.
 
 For a fresh project, we first start our Haskell project using `cabal init`.
 But instead of calling cabal directly, we can run it inside a Nix sandbox:
@@ -239,7 +247,7 @@ The project would be compiled in a pure Nix environment, and
 you should find the result executable in the `result/bin/`
 directory relative to where `nix-build` is run.
 
-The package, or derivation, from release.nix can then be
+The package, or derivation, from `release.nix` can then be
 imported by other Nix files to build new derivations. If you
 have a larger project in Nix, you can import `release.nix`
 to use the generated binary to build other projects.
@@ -312,6 +320,52 @@ haskellPackages = pkgs.haskellPackages.override {
 
 The above snippet would define a new `haskellPackages` with an
 additional package named `my-haskell-project`.
+
+## Demo Project
+
+We end this post with a demo project made available [on GitHub](https://github.com/maybevoid/maybevoid.com/tree/master/projects/2019-01-27-getting-started-haskell-nix) to demonstrate how a Haskell project can be built purely with Nix.
+The project have a single dependency on the `lens` library, and exposes a module
+`Demo` and an executable `haskell-nix-demo`.
+
+The `Demo` module simply exports two strings `hello` and `world`,
+extracted from a tuple using `Control.Lens`. The `haskell-nix-demo`
+simply imports the strings and print out "hello world".
+
+The key is the Nix files that define how the project is built:
+
+  - `default.nix` is generated from `haskell-nix-demo.cabal` using `cabal2nix`.
+  - `release.nix` is used to build the `haskell-nix-demo` executable.
+  - `shell.nix` is used to enter a Nix shell with both Haskell dependencies and
+    `cabal-install`.
+  - `external.nix` is how an external project can import the library as a
+    private module.
+
+The `Makefile` contains build recipes for building the Nix files:
+
+  - `make build` builds the project using `nix-build`.
+  - `make repl` enters `cabal repl` from a pure Nix shell.
+  - `make shell` enters a Nix shell.
+  - `make shell-pure` enters a pure Nix shell.
+  - `make external-shell` enters a pure Nix shell with the project built and installed.
+
+The main difference between `make shell` and `make external-shell` is that
+`make shell` provides a shell environment _before_ the project is built,
+while `make external-shell` shows how the project can be consumed as a
+Nix package. Inside `make external-shell`, both the `Demo` module and
+the `haskell-nix-demo` executable are ready for use:
+
+```bash
+$ make external-shell
+[nix-shell]$ haskell-nix-demo
+hello world
+
+[nix-shell]$ ghci
+Prelude> import Demo
+Prelude Demo> hello
+"hello"
+Prelude Demo> world
+"world"
+```
 
 ## References
 
