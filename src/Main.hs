@@ -15,7 +15,6 @@ renderHtml = do
   route   $ setExtension "html"
   compile $ pandocCompiler
     >>= loadAndApplyTemplate "templates/default.html" defaultContext
-    >>= relativizeUrls
 
 copyFiles :: Rules ()
 copyFiles = do
@@ -36,7 +35,6 @@ main = hakyllWith config $ do
     compile $ pandocCompiler
       >>= loadAndApplyTemplate "templates/post.html"  postContext
       >>= loadAndApplyTemplate "templates/default.html" postContext
-      >>= relativizeUrls
 
   match "css/*" $ do
     route   idRoute
@@ -60,7 +58,6 @@ main = hakyllWith config $ do
       makeItem ""
         >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
         >>= loadAndApplyTemplate "templates/default.html" archiveCtx
-        >>= relativizeUrls
 
   match "index.html" $ do
     route idRoute
@@ -73,7 +70,6 @@ main = hakyllWith config $ do
       getResourceBody
         >>= applyAsTemplate indexCtx
         >>= loadAndApplyTemplate "templates/default.html" indexCtx
-        >>= relativizeUrls
 
   match "templates/*" $ compile templateBodyCompiler
 
