@@ -1,7 +1,7 @@
-clean-env:
-	rm -f generator/.ghc.environment.*
+clean:
+	cd generator && $(MAKE) clean
 
-release: clean-env
+release: clean
 	nix-build .
 
-.PHONY: clean-env release
+.PHONY: clean release
