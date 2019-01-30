@@ -9,7 +9,7 @@ homepage:           https://maybevoid.com
 author:             Soares Chen
 maintainer:         soares.chen@maybevoid.com
 
-executable site
+executable generate-site
   main-is:          Main.hs
   hs-source-dirs:   src
   build-depends:    base == 4.*
