@@ -2,5 +2,7 @@ _site/
 _cache/
 dist/
 dist-newstyle/
+site-dist/
+hakyll-cache/
 .ghc*
 result

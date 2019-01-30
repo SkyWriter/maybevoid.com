@@ -9,6 +9,11 @@ import       Hakyll
 
 config :: Configuration
 config = defaultConfiguration
+  { providerDirectory = "site"
+  , storeDirectory = "hakyll-cache"
+  , tmpDirectory = "hakyll-cache/tmp"
+  , destinationDirectory = "site-dist"
+  }
 
 renderHtml :: Rules ()
 renderHtml = do
