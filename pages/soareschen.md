@@ -23,3 +23,13 @@ the broader programming language community around the world.
 To pay my bills while still learning things, I spent my day time doing functional
 programming in JavaScript. This will hopefully change soon when I start my first
 Haskell job in a few months time.
+
+## Contact
+
+I am active on the following channels:
+
+  - Email - (soares.chen@maybevoid.com)[mailto:soares.chen@maybevoid.com]
+  - Twitter - (@soareschen)[https://twitter.com/soareschen]
+  - GitHub - (@soareschen)[https://github.com/soareschen]
+  - [LinkedIn](https://www.linkedin.com/in/soareschen/)
+  - [Facebook](https://www.facebook.com/soareschen)

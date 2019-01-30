@@ -7,8 +7,8 @@ is on choosing the right toolchain. The Haskell ecosystem offers
 a number of package management solutions, which may be difficult
 for newcomers to choose. While most debates are about choosing
 between [Stack](https://www.haskellstack.org/) and
-[cabal-install](https://www.haskell.org/cabal/), here I am going
-to introduce starting a Haskell project with
+[cabal-install](http://hackage.haskell.org/package/cabal-install),
+here I am going to introduce starting a Haskell project with
 [Nix](https://nixos.org/nix/).
 
 ## Why Nix
@@ -51,10 +51,6 @@ knowledge for Nix is also transferrable, allowing you to build
 other non-Haskell projects with Nix as well after mastering it.
 
 ## Setup
-
-This tutorial is mainly based on Gabriel Gonzalez's guide to using [Haskell with Nix](https://github.com/Gabriel439/haskell-nix). To keep things simple
-I will skip the more advanced topics and focus on starting a bare
-minimal Haskell project with Nix.
 
 The first step is to install Nix on your machine following the
 instructions at [https://nixos.org/nix/](https://nixos.org/nix/).

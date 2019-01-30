@@ -33,4 +33,4 @@ company that I work with._
 ## Contact
 
 There is no comment section on this site. If you would like to give any feedback
-or comment, you can reach me through my email [soares.chen@maybevoid.com](mailto:soares.chen@maybevoid.com) or Twitter [\@maybevoid](https://twitter.com/maybevoid).
+or comment, you can reach me through my email [contact@maybevoid.com](mailto:contact@maybevoid.com) or Twitter [\@maybevoid](https://twitter.com/maybevoid).
