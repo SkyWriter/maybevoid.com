@@ -40,6 +40,7 @@ be officially recognized beyond this website.
 ## PLT Resources
 
   - [PLT by \@steshaw](https://steshaw.org/plt/)
+
   - [nLab wiki](https://ncatlab.org/nlab/show/HomePage)
 
 ## PLT Books
@@ -64,11 +65,17 @@ be officially recognized beyond this website.
 
   - [Oregon Programming Languages Summer School (OPLSS)](https://www.cs.uoregon.edu/research/summerschool/)
 
+  - [DeepSpec Summer School](https://deepspec.org/event/dsss18/)
+
+  - [Racket Summer School](https://summer-school.racket-lang.org/)
+
+  - [Applied Category Adjoint School](http://www.appliedcategorytheory.org/adjoint-school-act-2019/)
+
 ## PLT Conferences
 
   - [The International Conference on Functional Programming (ICFP)](https://www.icfpconference.org/)
 
-  - [ Principles of Programming Languages (POPL)](https://conf.researchr.org/series/POPL)
+  - [Principles of Programming Languages (POPL)](https://conf.researchr.org/series/POPL)
 
 ## PLT Video Courses
 
@@ -82,3 +89,5 @@ be officially recognized beyond this website.
 
   - [Frank Pfenning's CMU lectures on Linear Logic](https://www.cs.cmu.edu/~fp/courses/15816-s12/schedule.html) -
     [Panopto video recordings](https://scs.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx#folderID=%2217bf4c63-e606-4029-b508-f94c7d121ca0%22)
+
+  - [DeepSpec Summer School 2017](https://www.youtube.com/watch?v=jG61w5pOc2A&list=PLovJjGVqXXf3RgVdCXH96pPwSjFLDhSri)
