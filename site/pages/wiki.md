@@ -8,4 +8,5 @@ by submitting a [pull request](https://github.com/maybevoid/maybevoid.com/pulls)
 
 ## List of Wiki Articles
 
-  - [Haskell Reference](/wiki/haskell-reference.html)
+  - [Haskell](/wiki/haskell.html)
+  - [Programming Language Theory](/wiki/programming-language-theory.html)

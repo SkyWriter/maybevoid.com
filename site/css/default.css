@@ -74,13 +74,11 @@ article .header {
   font-size: 0.9em;
 }
 
-.sourceCode {
+code {
   font-family: 'Source Code Pro', monospace;
 }
 
-p code {
-  font-family: 'Source Code Pro', monospace;
-
+p code, li code {
   background-color: rgb(250,250,250);
   border: 1px solid rgb(200,200,200);
   padding-left: 4px;

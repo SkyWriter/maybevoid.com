@@ -1,5 +1,5 @@
 ---
-title: Haskell Reference
+title: Haskell Wiki
 ---
 
 This page contains a curated list of resources I found around the web
