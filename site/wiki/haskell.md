@@ -35,6 +35,8 @@ learning Haskell, which I find may be useful to others.
 
   - [Oleg Kiselyov's Papers](http://okmij.org/ftp/)
 
+  - [Haskell Bazaar](https://haskellbazaar.com/)
+
 ## Haskell Courses
 
 Paid Courses:
