@@ -24,8 +24,8 @@ routeSpec = Proxy
 
 mkApp' :: Config -> STM Application
 mkApp' config = do
-  counterState <- newTVar $ Counter $ initialCount config
-  let env = Env counterState
+  tvar <- newTVar $ Counter $ initialCount config
+  let env = Env tvar
   let server' = mkServer env
   let server = hoistServer routeSpec (liftIO . atomically) server'
   return $ serve routeSpec server

@@ -6,16 +6,14 @@ module MyApp.Server (mkServer, Env (..)) where
 import Prelude ()
 
 import Control.Monad (Monad)
-import Control.Monad.IO.Class (liftIO)
+import Control.Concurrent.STM (STM)
 import Control.Concurrent.STM.TVar (TVar)
-import Control.Concurrent.STM (STM, atomically)
-import Control.Monad.State.Class (MonadState (..))
 
-import GHC.Generics (Generic)
 import Servant.Server (ServerT)
 import Servant.API ((:<|>) (..))
 
 import MyApp.Model (Counter (..))
+import MyApp.Effect (runSTMStateEff)
 
 import MyApp.Handler
   ( helloHandler
@@ -30,11 +28,6 @@ import MyApp.Route
   , AppRoute
   )
 
-import MyApp.Effect
-  ( STMStateEff
-  , handleSTMStateEff
-  )
-
 data Env = Env
   { counterState :: TVar Counter
   }
@@ -43,10 +36,10 @@ helloServer :: forall eff. Monad eff => ServerT HelloRoute eff
 helloServer = helloHandler
 
 getCountServer :: TVar Counter -> ServerT GetCountRoute STM
-getCountServer counterTVar = handleSTMStateEff counterTVar getCountHandler
+getCountServer = runSTMStateEff getCountHandler
 
 incrementCountServer :: TVar Counter -> ServerT IncrementCountRoute STM
-incrementCountServer counterTVar = handleSTMStateEff counterTVar incrementCountHandler
+incrementCountServer = runSTMStateEff incrementCountHandler
 
 mkServer :: Env -> ServerT AppRoute STM
 mkServer env = helloServer

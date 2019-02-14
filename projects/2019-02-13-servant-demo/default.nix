@@ -1,5 +1,5 @@
 { mkDerivation, aeson, base, base-compat, free, mtl, servant
-, servant-server, stdenv, stm, text, wai, warp
+, servant-server, stdenv, stm, text, transformers, wai, warp
 }:
 mkDerivation {
   pname = "servant-demo";
@@ -8,7 +8,8 @@ mkDerivation {
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [
-    aeson base base-compat free mtl servant servant-server stm text wai
+    aeson base base-compat free mtl servant servant-server stm text
+    transformers wai
   ];
   executableHaskellDepends = [ base stm warp ];
   license = stdenv.lib.licenses.bsd3;
