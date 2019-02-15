@@ -22,17 +22,16 @@ library
   ghc-options:         -Wall -threaded
   hs-source-dirs:      src/lib
   default-language:    Haskell2010
-  exposed-modules:
-                       MyApp.App
-                     , MyApp.Effect
-                     , MyApp.Handler
-                     , MyApp.Model
-                     , MyApp.Route
-                     , MyApp.Server
-                     , MyApp.Effect.Abstract
-                     , MyApp.Effect.Concrete
+  exposed-modules:     Acme.App
+                     , Acme.Effect
+                     , Acme.Handler
+                     , Acme.Model
+                     , Acme.Route
+                     , Acme.Server
+                     , Acme.Effect.Abstract
+                     , Acme.Effect.Concrete
 
-executable servant-demo
+executable demo-server
   main-is:          Main.hs
   hs-source-dirs:   src/main
   ghc-options:      -Wall -threaded
@@ -55,3 +54,14 @@ test-suite servant-demo-test
                   , tasty
                   , tasty-hunit
                   , tasty-quickcheck
+                  , QuickCheck
+  other-modules:    AcmeTest.Main
+                  , AcmeTest.Abstract.Counter
+                  , AcmeTest.Impl.Counter
+                  , AcmeTest.Impl.Counter.STMEff
+                  , AcmeTest.Impl.Counter.StateEff
+                  , AcmeTest.Impl.Counter.StateT
+                  , AcmeTest.TestCase
+                  , AcmeTest.TestCase.Prop
+                  , AcmeTest.TestCase.Unit
+                  , AcmeTest.Util.Effect

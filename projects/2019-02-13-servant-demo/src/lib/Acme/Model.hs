@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module MyApp.Model (Counter (..)) where
+module Acme.Model (Counter (..)) where
 
 import Prelude (Int, Eq, Show)
 

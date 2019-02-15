@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 
-module MyApp.Route
+module Acme.Route
   ( HelloRoute
   , GetCountRoute
   , IncrementCountRoute
@@ -21,7 +21,7 @@ import Servant.API
   , PlainText
   )
 
-import MyApp.Model (Counter)
+import Acme.Model (Counter)
 
 type HelloRoute = "hello" :> Get '[PlainText] String
 type GetCountRoute = "counter" :> Get '[JSON] Counter

@@ -16,6 +16,10 @@ test:
 	nix-shell --pure shell.nix --run \
 		"cabal test"
 
+test-repl:
+	nix-shell --pure shell.nix --run \
+		"cabal repl test:servant-demo-test"
+
 shell:
 	nix-shell shell.nix
 

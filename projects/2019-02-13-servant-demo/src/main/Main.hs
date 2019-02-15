@@ -2,7 +2,7 @@ module Main where
 
 import Network.Wai.Handler.Warp (run)
 
-import MyApp.App (mkApp, Config (..))
+import Acme.App (mkApp, Config (..))
 
 config :: Config
 config = Config {

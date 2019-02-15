@@ -4,7 +4,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module MyApp.Effect.Abstract
+module Acme.Effect.Abstract
   ( StateEff
   , StateEff' (..)
   )

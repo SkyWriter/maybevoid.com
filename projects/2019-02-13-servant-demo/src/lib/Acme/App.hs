@@ -1,4 +1,4 @@
-module MyApp.App (mkApp, Config (..)) where
+module Acme.App (mkApp, Config (..)) where
 
 import Prelude (Int, IO, (.), ($))
 
@@ -11,9 +11,9 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Concurrent.STM.TVar (newTVar)
 import Control.Concurrent.STM (STM, atomically)
 
-import MyApp.Route (AppRoute)
-import MyApp.Model (Counter (..))
-import MyApp.Server (mkServer, Env (..))
+import Acme.Route (AppRoute)
+import Acme.Model (Counter (..))
+import Acme.Server (mkServer, Env (..))
 
 data Config = Config {
   initialCount :: Int

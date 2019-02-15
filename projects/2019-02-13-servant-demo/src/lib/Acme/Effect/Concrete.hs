@@ -5,7 +5,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module MyApp.Effect.Concrete
+module Acme.Effect.Concrete
   ( StateEff
   , STMStateEff
   , runSTMStateEff
@@ -33,7 +33,7 @@ import Control.Concurrent.STM.TVar
   , writeTVar
   )
 
-import MyApp.Effect.Abstract (StateEff, StateEff' (..))
+import Acme.Effect.Abstract (StateEff, StateEff' (..))
 
 newtype STMStateEff s a = STMStateEff
   ( ReaderT (TVar s) STM a )

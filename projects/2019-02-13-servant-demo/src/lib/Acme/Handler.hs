@@ -1,7 +1,7 @@
 {-# LANGUAGE ExplicitForAll #-}
 {-# LANGUAGE FlexibleContexts #-}
 
-module MyApp.Handler
+module Acme.Handler
   ( helloHandler
   , getCountHandler
   , incrementCountHandler
@@ -13,7 +13,7 @@ import Prelude (String, ($), (+))
 import Control.Monad (Monad (..))
 import Control.Monad.State.Class (MonadState (..))
 
-import MyApp.Model (Counter (..))
+import Acme.Model (Counter (..))
 
 helloHandler :: forall eff. Monad eff => eff String
 helloHandler = return "Hello World"

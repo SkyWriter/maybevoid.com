@@ -1,7 +1,7 @@
 {-# LANGUAGE ExplicitForAll #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module MyApp.Server (mkServer, Env (..)) where
+module Acme.Server (mkServer, Env (..)) where
 
 import Prelude ()
 
@@ -12,16 +12,16 @@ import Control.Concurrent.STM.TVar (TVar)
 import Servant.Server (ServerT)
 import Servant.API ((:<|>) (..))
 
-import MyApp.Model (Counter (..))
-import MyApp.Effect (runSTMStateEff)
+import Acme.Model (Counter (..))
+import Acme.Effect (runSTMStateEff)
 
-import MyApp.Handler
+import Acme.Handler
   ( helloHandler
   , getCountHandler
   , incrementCountHandler
   )
 
-import MyApp.Route
+import Acme.Route
   ( HelloRoute
   , GetCountRoute
   , IncrementCountRoute
