@@ -12,6 +12,10 @@ repl:
 	nix-shell --pure shell.nix --run \
 		"cabal repl lib:servant-demo"
 
+test:
+	nix-shell --pure shell.nix --run \
+		"cabal test"
+
 shell:
 	nix-shell shell.nix
 
