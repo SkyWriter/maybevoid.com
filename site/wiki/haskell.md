@@ -17,6 +17,8 @@ learning Haskell, which I find may be useful to others.
 
   - [Haskellers](#haskellers)
 
+  - [Haskell Blogs](#haskell-blogs)
+
   - [Haskell Books](#haskell-books)
 
 ## Haskell News
@@ -29,6 +31,8 @@ learning Haskell, which I find may be useful to others.
 
   - [Reddit /r/haskell](https://www.reddit.com/r/haskell/)
 
+  - [Haskell-Cafe](https://mail.haskell.org/mailman/listinfo/haskell-cafe)
+
 ## Haskell Resources
 
   - [What I wish I knew when learning Haskell](http://dev.stephendiehl.com/hask/)
@@ -36,6 +40,8 @@ learning Haskell, which I find may be useful to others.
   - [Oleg Kiselyov's Papers](http://okmij.org/ftp/)
 
   - [Haskell Bazaar](https://haskellbazaar.com/)
+
+  - [Typeclassopedia](https://wiki.haskell.org/Typeclassopedia)
 
 ## Haskell Courses
 
@@ -79,6 +85,14 @@ Haskellers whom I follow on the web:
 
   - Artyom Kazak - [Website](https://artyom.me/),
     [@availablegreen](https://twitter.com/availablegreen)
+
+  - Sandy Maguire - [Reasonably Polymorphic](https://reasonablypolymorphic.com/)
+
+## Haskell Blogs
+
+Non-personal blogs run by organizations or by more than one Haskellers:
+
+  - [Tweag I/O](https://www.tweag.io/blog)
 
 ## Haskell Books
 
