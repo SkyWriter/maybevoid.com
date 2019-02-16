@@ -28,7 +28,7 @@ Haskell job in a few months time.
 
 I am active on the following channels:
 
-  - Email - (soares.chen\@maybevoid.com)[mailto:soares.chen@maybevoid.com]
-  - Twitter - (\@soareschen)[https://twitter.com/soareschen]
-  - GitHub - (\@soareschen)[https://github.com/soareschen]
+  - Email - [soares.chen\@maybevoid.com](mailto:soares.chen@maybevoid.com)
+  - Twitter - [\@soareschen](https://twitter.com/soareschen)
+  - GitHub - [\@soareschen](https://github.com/soareschen)
   - [LinkedIn](https://www.linkedin.com/in/soareschen/)
