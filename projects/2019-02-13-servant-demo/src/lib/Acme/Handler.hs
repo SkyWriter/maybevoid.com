@@ -18,8 +18,9 @@ import Acme.Model (Counter (..))
 helloHandler :: forall eff. Monad eff => eff String
 helloHandler = return "Hello World"
 
-getCountHandler :: forall eff
-  . (MonadState Counter eff)
+getCountHandler
+  :: forall eff .
+  ( MonadState Counter eff )
   => eff Counter
 getCountHandler = get
 

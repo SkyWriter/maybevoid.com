@@ -25,7 +25,7 @@ counterTestSTMEff :: forall eff.
 counterTestSTMEff initialCount = do
   let finalCount = initialCount + 1
 
-  tvar <- liftIO $ atomically $ newTVar $ Counter $ initialCount
+  tvar <- liftIO $ atomically $ newTVar $ Counter initialCount
 
   let getCount = liftIO $ atomically $ runSTMStateEff getCountHandler tvar
   let incrementCount = liftIO $ atomically $ runSTMStateEff incrementCountHandler tvar

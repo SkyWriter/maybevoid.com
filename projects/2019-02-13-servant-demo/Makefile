@@ -2,23 +2,23 @@ build:
 	nix-build release.nix
 
 run: build
-	result/bin/servant-demo
+	result/bin/demo-server
 
 dev-server:
 	nix-shell --pure shell.nix --run \
-		"cabal run exe:servant-demo"
+		"cabal new-run --write-ghc-environment-files never demo-server"
 
 repl:
 	nix-shell --pure shell.nix --run \
-		"cabal repl lib:servant-demo"
+		"cabal new-repl --write-ghc-environment-files never lib:servant-demo"
 
 test:
 	nix-shell --pure shell.nix --run \
-		"cabal test"
+		"cabal new-test --write-ghc-environment-files never"
 
 test-repl:
 	nix-shell --pure shell.nix --run \
-		"cabal repl test:servant-demo-test"
+		"cabal new-repl --write-ghc-environment-files never test:servant-demo-test"
 
 shell:
 	nix-shell shell.nix

@@ -4,5 +4,5 @@ module Acme.Effect
   )
 where
 
-import Acme.Effect.Abstract as Abstract hiding (StateEff' (..))
+import Acme.Effect.Abstract as Abstract
 import Acme.Effect.Concrete as Concrete
