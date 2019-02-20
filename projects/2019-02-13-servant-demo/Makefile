@@ -1,22 +1,25 @@
-build:
+hpack:
+	nix-shell --pure shell.nix --run hpack
+
+release: hpack
 	nix-build release.nix
 
-run: build
+run: release
 	result/bin/demo-server
 
-dev-server:
+dev-server: hpack
 	nix-shell --pure shell.nix --run \
 		"cabal new-run --write-ghc-environment-files never demo-server"
 
-repl:
+repl: hpack
 	nix-shell --pure shell.nix --run \
 		"cabal new-repl --write-ghc-environment-files never lib:servant-demo"
 
-test:
+test: hpack
 	nix-shell --pure shell.nix --run \
 		"cabal new-test --write-ghc-environment-files never"
 
-test-repl:
+test-repl: hpack
 	nix-shell --pure shell.nix --run \
 		"cabal new-repl --write-ghc-environment-files never test:servant-demo-test"
 
@@ -29,7 +32,7 @@ shell-pure:
 external-shell:
 	nix-shell external.nix
 
-watch:
+watch: hpack
 	nix-shell --pure shell.nix --run \
 		'ghcid --command="cabal repl lib:servant-demo"'
 
