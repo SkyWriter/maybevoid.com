@@ -31,6 +31,7 @@ main = hakyllWith config $ do
   match "404.md" renderHtml
   match "wiki/*" renderHtml
   match "pages/*" renderHtml
+  match "drafts/*" renderHtml
 
   match "robots.txt" copyFiles
   match "images/*" copyFiles
