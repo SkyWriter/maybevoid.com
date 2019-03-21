@@ -5,34 +5,41 @@ title: "Implicit Effects: Algebraic Effects in Haskell with Implicit Parameters"
 
 ## Introduction
 
-In this post, I would like to introduce a new effects library called `implicit-effects` to the Haskell ecosystem.
-`implicit-effects` is an _experimental_ effects library I developed with less than a year study into algebraic
-effects. I will share about the different approaches I use to implement algebraic effects in Haskell, which I
-think is worth _considering_ or _explored further_ by the Haskell community. However since this is my first
-serious personal Haskell project, and given that I lacks professional experience in developing production-grade
-Haskell applications, this is _not_ a call for adoption for you to use `implicit-effects` in any serious Haskell
-projects. (at least not yet)
+In this post, I would like to introduce a new effects library called `implicit-effects`
+to the Haskell community. `implicit-effects` is an _experimental_ effects library I
+developed with less than a year study into algebraic effects. I will share about the
+different approaches I use to implement algebraic effects in Haskell, which I think
+is worth _considering_ or _explored further_ by the Haskell community. However
+considering this is my first serious personal Haskell project, and given that I
+lacks professional experience in developing production quality Haskell applications,
+this is _not_ a call for adoption for you to use `implicit-effects` in any serious
+Haskell projects. (At least not yet)
 
-In the following sections, we will first go through a brief overview of the current state of effects management
-in Haskell, and compare it to the full flexibility of coding in algebraic effects. We then observe the repeating
-patterns used in defining new effects, and learn about new concepts called operations and co-operations. We will
-see how with implicit parameters, we can bind effect operations into constraints without defining type classes.
-We then look at higher level structures, such as `Computation`, `Handler`, and `Pipeline`, can help us perform
-transformation on computations to give partial interpretation to effects. Finally we look at some example
-programs in Eff and see how we can implement them in Haskell using `implicit-effects`.
+In the following sections, we will first go through a brief overview of the current
+state of effects management in Haskell, and compare it to the full flexibility of
+coding in algebraic effects. We then observe the repeating patterns used in
+defining new effects, and learn about new concepts called operations and
+co-operations. We will see how with implicit parameters, we can bind effect
+operations into constraints without defining type classes. We then look at higher
+level structures, such as `Computation`, `Handler`, and `Pipeline`, can help us
+perform transformation on computations to give partial interpretation to effects.
+Finally we look at some example programs in Eff and see how we can implement them
+in Haskell using `implicit-effects`.
 
 ## From Monad to Extensible Effects
 
-The concept of monad was borrowed from category theory to Haskell, with one of its main use for introducing
-impure computation to the pure language through the `IO` monad. Since then Haskellers have written numerous
-tutorials to explain what monad is to the broader programming community. The abstraction behind monad may
-be difficult to grasp for newcomers, but it is the functionalities provided by implementing new monads
-that makes it worth learning deeper.
+The concept of monad was borrowed from category theory to Haskell, with one of
+its main use case is for allowing impure computation in a pure language using
+the `IO` monad. Since then Haskellers have written numerous tutorials to explain
+what monad is to the broader programming community. The abstraction behind monad
+may be difficult to grasp for newcomers, but it is the functionalities provided
+by implementing new monads that makes it worth learning deeper.
 
 ### Bare Monad
 
-When we first started learning monads, we typically come across few of the well known examples such as
-`Reader` and `State`, and they would look something as follow:
+When we first started learning monads, we typically come across few of the well
+known examples such as `Reader` and `State`, and they would look something as
+follow:
 
 ```haskell
 -- Effect Definitions
@@ -61,51 +68,57 @@ runReader = ($)
 evalState = fst . runState
 ```
 
-As we implement more monads, a pattern arise and we find ourselves doing similar things each time.
-We first define new datatypes such as `type Reader` or `newtype State` to store the information
-required to carry out the monadic operations containing the desired effects. After that we define
-the `Monad` instance for these datatypes to give meaning to how `return` and `>>=` should behave.
-To make it convenient to the library users, we also define convenient functions such as `ask`, `get`,
-and `put` so that users can perform the desired actions inside the monad without knowing the details.
-Finally we define extraction functions so that we can extract a value `a` out of a monad `m` for any
-`m a`.
+As we implement more monads, a pattern arise and we find ourselves doing similar
+things each time. We first define new datatypes such as `type Reader` or
+`newtype State` to store the information required to carry out the monadic
+operations containing the desired effects. After that we define the `Monad`
+instance for these datatypes to give meaning to how `return` and `>>=` should
+behave. To make it convenient to the library users, we also define convenient
+functions such as `ask`, `get`, and `put` so that users can perform the
+desired actions inside the monad without knowing the details. Finally we
+define extraction functions so that we can extract a value `a` out of a
+monad `m` for any `m a`.
 
-An effect in its most basic form is consist of four parts:
+An effect in its most basic form can be broken down into four parts:
 
-**Effect Definition** - This defines the concept and "shape" of the effect through its type
-constructor / kind signature. We can see that `Reader` is an effect parameterized by a type
-`r`, while `State` is an effect parameterized by a type `s`. Both `Reader` and `State` have
-the type/kind `Type -> (Type -> Type)` - note the bracket on the right side is written
-explicitly to show it produces a monad type, which have the type `Type -> Type`. Lastly,
-also note that the body of the type definition is kind of irrelevant from the user point of
-view. The author of an effect can choose to not expose the data constructors without
-affecting the users of an effect.
+**Effect Definition** - This defines the concept and "shape" of the effect
+through its type constructor / kind signature. We can see that `Reader` is an
+effect parameterized by a type `r`, while `State` is an effect parameterized
+by a type `s`. Both `Reader` and `State` have the type/kind
+`Type -> (Type -> Type)` - note the bracket on the right side is written
+explicitly to show it produces a monad type, which have the type `Type -> Type`.
+Lastly, also note that the body of the type definition is kind of irrelevant
+from the user point of view. The author of an effect can choose to not expose
+the data constructors without affecting the users of an effect.
 
-**Effect Implementation** - This turns the datatypes we defined into a _concrete_ effect by
-making it a monad instance. With that we can perform the supported effectful computation
-under the given monad. In the example above, the implementation also performs _interpretation_
-of the effect through both the `Monad` instance and the datatype bodies. The concrete effect
-is also tied directly to the effect definition, which means we cannot define any alternative
-implementation that share the same effect definition. We will see in later sections how
-abstract implementations and free implementations allows multiple implementations of the
-same effect definition.
+**Effect Implementation** - This turns the datatypes we defined into a
+_concrete_ effect by making it a monad instance. With that we can perform the
+supported effectful computation under the given monad. In the example above,
+the implementation also performs _interpretation_ of the effect through both
+the `Monad` instance and the datatype bodies. The concrete effect is also
+tied directly to the effect definition, which means we cannot define any
+alternative implementation that share the same effect definition. We will
+see in later sections how abstract implementations and free implementations
+allows multiple implementations of the same effect definition.
 
-**Effect Operation** - The effect operations can be seen as the external API for an effect.
-For users of an effect, the only thing matter is the operation functions associated with
-the effect definition. An effect operation may accept zero or more arguments and return
-an effectful result wrapped under the associated monad `m`. The body of the operation
-defines how the operation is translated to the underlying concrete effect, but that
-detail is not important to the user.
+**Effect Operation** - The effect operations can be seen as the external API
+for an effect. For users of an effect, the only thing matter is the operation
+functions associated with the effect definition. An effect operation may
+accept zero or more arguments and return an effectful result wrapped under
+the associated monad `m`. The body of the operation defines how the operation
+is translated to the underlying concrete effect, but that detail is not important
+to the user.
 
-**Result Extraction** - Many effect implementations build up _contexts_ when executing
-effectful computations, and then extract result from the final context returned from the
-end of the computation. The context typically require additional arguments for the
-result to be extracted, such as the initial state for the State monad. In the above
-example, the context is defined directly in the body of the effect definition. As a
-result the bind operator of the `Monad` instances also have to take care of the
-monadic binding of the contexts. Tight coupling between the context and monadic
-bind is one major source of complexity, and we will learn in later sections how
-algebraic effects decouples the context from the monad.
+**Result Extraction** - Many effect implementations build up _contexts_ when
+executing effectful computations, and then extract result from the final context
+returned from the end of the computation. The context typically require
+additional arguments for the result to be extracted, such as the initial state
+for the State monad. In the above example, the context is defined directly in
+the body of the effect definition. As a result the bind operator of the
+`Monad` instances also have to take care of the monadic binding of the contexts.
+Tight coupling between the context and monadic bind is one major source of
+complexity, and we will learn in later sections how algebraic effects decouples
+the context from the monad.
 
 ### Monad Transformers
 
@@ -260,6 +273,7 @@ of `StateEff` for long enough, we would make the following observation:
     The result type for a co-operation in `StateCoOp` indexed by value type `a`
     is the _continuation_ `(a -> r)` for _any_ r type in `StateCoOp s r`.
 
+**Effect Interpretation**
 
 ## References
 

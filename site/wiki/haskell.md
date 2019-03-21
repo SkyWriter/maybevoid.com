@@ -43,6 +43,8 @@ learning Haskell, which I find may be useful to others.
 
   - [Typeclassopedia](https://wiki.haskell.org/Typeclassopedia)
 
+  - [A Haskell Implementation Reading List](http://www.stephendiehl.com/posts/essential_compilers.html)
+
 ## Haskell Courses
 
 Paid Courses:
