@@ -2,6 +2,12 @@
 title: "Implicit Effects: Algebraic Effects in Haskell with Implicit Parameters"
 ---
 
+<i>
+  This is a draft post I am working on for releasing the Haskell library
+  `implicit-effects`. For any feedback, please feel free to ping me through
+  [email](mailto:soareschen@maybevoid.com) or drop a comment directly in the
+  [latest commit](https://github.com/maybevoid/maybevoid.com/commits/master/site/drafts/implicit-effects.md).
+</i>
 
 ## Introduction
 
@@ -215,6 +221,11 @@ the computation.
 ```haskell
 import Control.Monad.Free
 
+-- (recap definition)
+data Free f a
+  = Pure a
+  | Free (f (Free f a))
+
 -- Effect Co-operations
 data EnvCoOp e r
   = Ask (e -> r)
@@ -273,7 +284,15 @@ of `StateEff` for long enough, we would make the following observation:
     The result type for a co-operation in `StateCoOp` indexed by value type `a`
     is the _continuation_ `(a -> r)` for _any_ r type in `StateCoOp s r`.
 
-**Effect Interpretation**
+**Effect Interpretation** - Although the free monad is a _concrete_ effect,
+it does not provide meaning directly to the computation. Instead it requires
+_interpretation_ of the computation tree reified by the free monad. There
+are many ways we can interpret an effect. The most common approach is to use
+`foldFree`, which takes an interpreter with natural transformation
+`forall x . f x -> m x` that interprets a _co-operation_ `f` under another
+effect `m` for all continuation result `x`. The interpreter is used by
+`foldFree` to perform catamorphism on `Free f a` and the result of the
+interpretation becomes `m a`
 
 ## References
 
