@@ -210,18 +210,18 @@ Because of this, Haskellers tend to conflate between the concepts
 of _monad_ and _effects_. It is common that defining new effects
 is synonymous to defining datatypes with `Monad` instances. Free
 monad changes this by making it possible to create and interpret
-effects without implementing a `Monad` instance.
+effects without implementing a `Monad` instance for it.
 
-The concept of free monad also comes from category theory. It means
-we can get a monad for free for any `Functor` instance `f`. The
-`Free f` monad instance builds up a computation tree in `(>>=)`,
-which then requires interpretation to give actual meaning to
+The concept of free monad also comes from category theory. Roughly
+it means we can get a monad for free for any `Functor` instance `f`.
+The `Free f` monad instance builds up a computation tree in `(>>=)`,
+which then requires further interpretation to give actual meaning to
 the computation.
 
 ```haskell
 import Control.Monad.Free
 
--- (recap definition)
+-- From Control.Monad.Free
 data Free f a
   = Pure a
   | Free (f (Free f a))
@@ -293,6 +293,145 @@ are many ways we can interpret an effect. The most common approach is to use
 effect `m` for all continuation result `x`. The interpreter is used by
 `foldFree` to perform catamorphism on `Free f a` and the result of the
 interpretation becomes `m a`
+
+**Free Effects** - Free effects are concrete effects in the sense that they
+have a concrete implementation of a monad instance. This means unlike
+abstract effects, computations that directly use a free effect are tied
+to a particular implementation of free effects. Over the years there
+are many free effects libraries published, including `free`,
+`freer-simple`, `extensible-effects`, `fused-effects`, etc. Most of
+the time, these libraries expect users to use the free effect they
+offer for _all_ their application code. This often amplifies
+concerns such as performance issues of free effects, as users are
+locked in to using one free effect implementation and may not able
+to switch out easily. A better approach would be to define
+computations to use abstract effects such as `MonadState`, so that
+they can still interprete the effects in other ways through either
+alternative free effects or other concrete effects.
+
+### Handler Pattern
+
+Although free effects offer a lot of flexibilities in effect interpretation,
+it also introduce additional complexities even in common cases that don't need
+advanced effect interpretations. Consider a time effect that gets the current
+system time:
+
+```haskell
+class Monad m => MonadTime m where
+  currentTime :: m UTCTime
+```
+
+The `MonadTime` class provides an abstract interface to the time effect.
+However implementing the class instance all possible monad transformer
+stacks may prove to be a challenge to anyone without deep understanding
+on typeclasses. The free effect approach may provide more flexibility,
+but the boilerplate is not very intuitive and may look confusing.
+
+```haskell
+data TimeCoOp r = CurrentTime (UTCTime -> r)
+  deriving (Functor)
+
+type TimeEff e a = Free TimeCoOp a
+
+interpTime :: forall s a . TimeEff a -> IO a
+interpTime ref m = foldFree interp m
+ where
+  interp (CurrentTime cont) = getCurrentTime >>= cont
+```
+
+The use of free effects can get even more confusing when interpretation
+of multiple effects are needed, adding additional noise to an effect
+with rather simple default implementation.
+
+People soon realize in most cases custom effects can be interpreted
+directly in terms of an outer effect such as `IO`. In such cases
+the complexities of monad transformers and free effects may cost
+too much effort when all they need is `IO` with some mocking
+capability.
+
+The handler pattern is an alternative effect pattern that arise to
+implement and interpret simple effects:
+
+```haskell
+-- Effect Operations
+data AppOps eff = AppOps {
+  currentTime :: eff UTCTime
+  ...
+}
+
+defaultAppOps :: AppOps IO
+defaultAppOps = AppOps {
+  currentTime = getCurrentTime
+  ...
+}
+
+mockAppOps :: AppOps IO
+mockAppOps = AppOps {
+  currentTime = return $ ... -- return mock time
+  ...
+}
+
+app :: forall eff . AppOps eff -> eff ()
+app ops = do
+  ...
+  time <- currentTime ops
+  ...
+
+defaultApp :: IO ()
+defaultApp = app defaultAppOps
+```
+
+Using the handler pattern, there is almost no advanced Haskell feature
+used, and the code becomes much easier to understand. Comparing more carefully
+with the previous examples, we may notice there are still some similarities.
+
+In the handler pattern, we are effectively sacrificing most of the power of
+effect systems and keep only the effect operations. The `AppOps` type
+is essentially the union of all simple effect operations that can implemented
+using another effect `eff`, typically `IO`. We then pass around the effect
+operations as function arguments, instead of passing them implicitly via
+typeclass constraints.
+
+Since the effect operations are passed explicitly, it is much easier to replace
+the effect implementation. There is no need to declare a newtype wrapper around
+the base effect just to allow for different typeclass instances. As we are
+working mostly on a base effect like `IO`, we get to reason about our
+applications much easily.
+
+On the down side, the handler pattern makes it much harder if we want to
+interpret or compose effects in more advanced ways. we want to wrap a `StateT`
+around our base effect, we would at least need to redefine our effect operations
+around that new base effect. Working with everything in `IO` also partially
+forgo the advantage of coding in a purely functional language like Haskell,
+as we can no longer reason about what exact side effects have happened when
+our app returns a single `IO`.
+
+Nevertheless, the simplicity of the handler pattern is worth considering.
+What we really want to find out, is whether there is any way to implement
+our effect operations similar to the handler pattern when it can be
+interpreted with another base effect, without limiting the power of the
+effect system? Ideally we'd like something as follow:
+
+```haskell
+data TimeOps eff = TimeOps {
+  currentTime :: eff UTCTime
+}
+
+app1 :: forall eff . (Monad eff, MonadTime eff) => eff ()
+app1 = ...
+
+timeOps :: TimeOps IO {
+  currentTime = getCurrentTime
+}
+
+-- withOps :: ???
+app2 :: IO ()
+app2 :: withOps timeOps app
+```
+
+As we will see in later sections, the "magical" `withOps` function is
+one of the missing pieces we will implement to get a simple yet powerful
+effect system with `implicit-effects`.
 
 ## References
 
