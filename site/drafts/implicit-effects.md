@@ -466,22 +466,23 @@ let state initial = handler
   | effect (Put n) k -> (fun m -> continue k () n)
 
   (* Context initialization *)
-  (* handleReturn :: a -> (Int -> a)  *)
+  (* return :: a -> (Int -> a)  *)
   | x -> (fun _ -> x)
 
   (* Result extraction *)
-  (* extract :: (Int -> a) -> a *)
+  (* finally :: (Int -> a) -> a *)
   | finally g -> g initial
 ;;
 
 (* Computations *)
-(* comp1 :: Int!{Get, Put} *)
+(* comp1 :: () -> Int!{Get, Put} *)
 let comp1 () : int =
   let x1 = perform Get in
   perform (Put x1 + 1);
   x1 + 2
 ;;
 
+(* comp2 :: () -> Int!{Get, Put} *)
 let comp2 () : int =
   let x1 = comp1 () in
   let x2 = comp1 () in
@@ -512,36 +513,176 @@ annotate the types of the Eff statements in a pseudo Haskell-like syntax
 extended with the effect row notation `!{}`. Note that these are not actual type
 signatures as the constructs are not regular functions in Eff.
 
-  - The `state` effect handler have the conceptual type somewhere along the
-    line of `forall a ε . Int -> (() -> a!{Get, Put | ε}) -> (() -> a!{|ε})`.
-    It means given an initial state of type `Int`, and a computation thunk
-    `() -> a!{Get, Put | ε}` that would produce an effectful value of type `a`
-    that makes use of the effects `Get` and `Put` optionally with additional
-    effects `ε`, it returns a new computation thunk `(() -> a!{|ε})` that
-    no longer depends on the `Get` and `Put` effects when called.
+The `state` effect handler have the conceptual type somewhere along the
+line of `forall a ε . Int -> (() -> a!{Get, Put | ε}) -> (() -> a!{|ε})`.
+It means given an initial state of type `Int`, and a computation thunk
+`() -> a!{Get, Put | ε}` that would produce an effectful value of type `a`
+that makes use of the effects `Get` and `Put` optionally with additional
+effects `ε`, it returns a new computation thunk `(() -> a!{|ε})` that
+no longer depends on the `Get` and `Put` effects when called.
 
-  - The second last handler statement `x -> (fun _ -> x)` is the return handler
-    with the effective type `a -> (Int -> a)`. It wraps a pure value of type `a`
-    into a context of type `(Int -> a)` so that the context can be built up and
-    get called with the initial state by the finalizer. We can notice this is
-    pretty much the same as how the `State` monad in Haskell implements the
-    monadic `return`.
+The second last handler statement `x -> (fun _ -> x)` is the return handler
+with the effective type `a -> (Int -> a)`. It wraps a pure value of type `a`
+into a context of type `(Int -> a)` so that the context can be built up and
+get called with the initial state by the finalizer. We can notice this is
+pretty much the same as how the `State` monad in Haskell implements the
+monadic `return`.
 
-  - The first two handler statements handles the `Get` and `Put` effects.
-    They get access to the continuation `k` as the second argument. The handlers
-    extend the original context built up by the return handler and return a new
-    `Int -> a` in its result. There may be potential confusion when we then
-    try to determine the type of `k`. The first argument to `k` is the type of
-    the result of an effectful operation - `Int` for `Get` and `()` for `Put`.
-    But the result type of `k` is the context returned from the return handler,
-    `Int -> a`. In other words, the `Get` and `Put` effect handlers create a
-    new context `Int -> a`, which accepts for the current state value then calls
-    the continuation to get the inner context and then pass the new state to it.
+The first two handler statements handles the `Get` and `Put` effects.
+They get access to the continuation `k` as the second argument. The handlers
+extend the original context built up by the return handler and return a new
+`Int -> a` in its result. There may be potential confusion when we then
+try to determine the type of `k`. The first argument to `k` is the type of
+the result of an effectful operation - `Int` for `Get` and `()` for `Put`.
+But the result type of `k` is the context returned from the return handler,
+`Int -> a`. In other words, the `Get` and `Put` effect handlers create a
+new context `Int -> a`, which accepts for the current state value then calls
+the continuation to get the inner context and then pass the new state to it.
 
-  - The finalizer in the `finally` statement extracts the final result out of
-    the state context `g` of type `Int -> a` by calling it with the initial state
-    `initial`. This is how we get back our computation result `a` and is akin to
-    `evalState` of the `State` monad in Haskell.
+The finalizer in the `finally` statement extracts the final result out of
+the state context `g` of type `Int -> a` by calling it with the initial state
+`initial`. This is how we get back our computation result `a` and is akin to
+`evalState` of the `State` monad in Haskell.
+
+**Computation** - In Eff any function can perform effectful computation, and
+the expressions strongly resembles regular OCaml expressions. To call an
+effect operation, the `perform` keyword is used in place of a function call.
+Since `perform` also forms an expression, its return value can be used directly
+in other expressions such as `let` without having to bind a monadic value
+through `do` blocks or `(>>=)` like in Haskell.
+
+Strictly speaking, `comp1` and `comp2` should have a type like
+`() -> Int!{Get, Put}`. But in Eff the effects used by a function are not
+tracked in its type signature. As a result we cannot generally know what
+effects are used in a function. This makes Eff a static typed language with
+dynamic effect system. As all effects in Eff must be handled when an expression
+is evaluated, calling an unhandled effect would get handled by an unhandled
+effect handler resulting in the program crashing.
+
+The fact that all effects must be handled during evaluation is also why
+`comp1` and `comp2` are functions of type `() -> Int!{Get, Put}` instead of
+expressions of type `Int!{Get, Put}`. Since we don't want `comp1` and `comp2`
+to bind with fixed effect handlers, we wrap them in a function so that the
+effects can be handled by different effect handlers only when the functions are
+called.
+
+**Effect Handling** - In Eff effects are handled using the `with .. handle ..`
+expression. The expression after `with` should be an expression of type
+`handler` created from the `handler` expression. The expression after `handle`
+should be an expression that is expected to invoke effect operations that
+would get handled by the effect handler. Any effect that is not handled by
+the handler in `with` would get propogated to the outer scope, until it is
+handled or result in unhandled effect handler.
+
+### Choice Effect in Eff
+
+We can see from earlier example that with built in language constructs for
+effects, we can express effects more elegantly in Eff than in Haskell. However
+the full advantage of algebraic effects in Eff is not just the syntactic
+constructs, but also new ways` of structuring our code to solve different
+problems. One particular strength is the access to the continuation `k` in
+our effect handlers. Since we have access to the continuation, we can choose
+to resume it more than one times, or discard the continuation and halting the
+computation.
+
+Consider the following Eff example for a choice effect:
+
+```ocaml
+(* Effect Definitions *)
+effect Decide : bool;;
+
+(* Effect Handlers *)
+(* choose_true :: forall a ε . (() -> a!{Decide | ε}) -> (() -> a!{|ε}) *)
+let choose_true = handler
+  (* Decide (Bool -> a) -> a *)
+  | effect Decide k -> continue k true;;
+
+  (* default return *)
+  (* return :: a -> a *)
+  (* | x -> x *)
+
+(* choose_all :: forall a ε . (() -> a!{Decide | ε}) -> (() -> [a]!{|ε}) *)
+let choose_all = handler
+  (* Decide (Bool -> [a]) -> [a] *)
+  | effect Decide k -> continue k true @ continue k false
+
+  (* return :: a -> [a] *)
+  | x -> [x]
+;;
+
+(* comp1 :: () -> Int!{Decide} *)
+let comp1 () : int =
+  let x = (if perform Decide then 10 else 20) in
+  let y = (if perform Decide then 0 else 5) in
+  x - y
+;;
+
+(* val res1 : int = 10 *)
+let res1 = with choose_true handle comp1 ()
+
+(* val res2 : int list = [10; 5; 20; 15] *)
+let res2 = with choose_all handle comp1 ()
+```
+
+The above code demonstrates an effect `Decide`, which non-derterministically
+returns either `true` or `false`, akin to tossing a coin. Based on the result,
+a computation can branch out in `if` statements to perform other compuations.
+The interesting part is when the `Decide` operation is called, since the effect
+handler have access to the continuation `k`, it can decide to resume the
+continuation with _both_ `true` and `false`, and get back all possible results
+of that computation.
+
+Before going into multiple resumption of continuations, we take a look at
+the simpler `choose_true` handler. `choose_true` always resume the continuation
+exactly once with `true`, and return the result directly. Because `choose_true`
+does not build any context or alter the result, it does not need to define a
+return handler, which can otherwise be explicitly defined as `| x -> x`.
+Since there is no context, `choose_true` also doesn't need a `finally` handler
+as the continuation result is already `a`.
+
+We then look at the `choose_all` handler, which always resume the continuation
+with both `true` and `false`. This also means `choose_all` will get multiple
+results from a computation `a`, each representing different branch results
+from the `Decide` operation. In our example, `choose_all` returns all results
+as `[a]` for any computation `a`.
+
+In the return handler of `choose_all`, it wraps a plain value inside a
+singleton list as the context, and has the type `a -> [a]`. This makes
+the continuations in the `Decide` handler `[a]`, with the overall type
+`Decide (Bool -> [a]) -> [a]`. The `Decide` handler resumes the
+continuation twice with `true` and `false`, and then use the `@` operator
+to concatenate the result for both branches.
+
+Although `choose_all` builds up a context with `[a]`, it does not have
+a `finally` handler to extract the context result back to `a`. Because
+of this, `choose_all` _alters_ the result type of a computation `a` to
+`[a]`, and have the type
+`forall a ε . (() -> a!{Decide | ε}) -> (() -> [a]!{|ε})`. This shows
+that unlike the free monad approach in Haskell, effect interpretations
+in algebraic effects does not need to be natural transformation. An effect
+handler can handle computations with concrete types, and produce new
+computations with different types.
+
+Finally we have an example computation `comp1`, which performs two `Decide`
+operations, branch twice to decide the values for `x` and `y`, and finally
+return the result `x-y`. In `res1` we handle `comp1` with `choose_true`,
+which resume the continuation once with `true` for each call, and produce
+the `Int` result `10`. Meanwhile in `res2` we handle `comp1` with `choose_all`,
+which produces 4 different results: 10 for x=10 (true), y=0 (true); 5 for
+x=10 (true), y=5 (false); 20 for x=20 (false), y=0 (true); and 15 for x=20
+(false), y=5 (false).
+
+As a final note, Haskell do have non determinism with monads such as `List`
+corresponding to `choose_all`. However the effect interpretation is hardcoded
+and does not allow us to easily switch to different interpretations such as
+`choose_true`. In Eff since it is so easy to implement alternative effect
+interpreations, we can for example build an alternative `choose_all` handler
+that stores the result in a binary tree to represent the decision tree for
+each decision.
+
+When the effect context gets decoupled from the concrete monad, it becomes
+much easier to define new contexts without having to worry about how `(>>=)`
+can be derived from the context.
 
 ## References
 
