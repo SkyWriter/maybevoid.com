@@ -433,6 +433,116 @@ As we will see in later sections, the "magical" `withOps` function is
 one of the missing pieces we will implement to get a simple yet powerful
 effect system with `implicit-effects`.
 
+## Algebraic Effects
+
+We are going take a detour away from Haskell and look at Eff, a research
+language that implements algebraic effects. Algebraic effects is an emerging
+programming language concept that is getting pushed for adoption in a number
+of programming languages. It is similar to the effects systems and patterns
+in Haskell, but is more generalized and more powerful. In languages such as
+Eff, effect is a built in construct and thus require much less boilerplate
+as compared to Haskell, which we have to encode effects using the existing
+type system.
+
+### State Effect in Eff
+
+Let's look at an example definition and implementation of the state effect
+in Eff:
+
+```ocaml
+(* Effect Definitions *)
+effect Get : int
+effect Put : int -> unit
+
+(* Effect Handlers *)
+(* state :: forall a ε . Int -> (() -> a!{Get, Put | ε}) -> (() -> a!{|ε}) *)
+let state initial = handler
+  (* Effect Interpretations *)
+
+  (* Get (Int -> (Int -> a)) -> (Int -> a) *)
+  | effect Get k -> (fun m -> continue k m m)
+
+  (* Put Int (() -> (Int -> a)) -> (Int -> a)  *)
+  | effect (Put n) k -> (fun m -> continue k () n)
+
+  (* Context initialization *)
+  (* handleReturn :: a -> (Int -> a)  *)
+  | x -> (fun _ -> x)
+
+  (* Result extraction *)
+  (* extract :: (Int -> a) -> a *)
+  | finally g -> g initial
+;;
+
+(* Computations *)
+(* comp1 :: Int!{Get, Put} *)
+let comp1 () : int =
+  let x1 = perform Get in
+  perform (Put x1 + 1);
+  x1 + 2
+;;
+
+let comp2 () : int =
+  let x1 = comp1 () in
+  let x2 = comp1 () in
+  x1 + x2
+;;
+
+(* Effect handling *)
+(* val res : int = 9 *)
+let res = with state 2 handle comp2 ()
+```
+
+We can make several observations:
+
+**Effect Definitions** - In Eff both the effect operations and co-operations
+are defined together with the `effect` statement. The result type does not
+need to be parameterized by a effect variable, as all functions in Eff can
+invoke arbitrary effects in the body. When an effect is handled inside an
+effect handler, it is passed in the co-operation form, e.g. `(Put n) k`
+where k represents the continuation. When an effect is used by a computation,
+it is called in the operation form, e.g. `(Put x)`, and the monadic result is
+implicitly unwraped as return value to the caller.
+
+**Effect Handlers** - In Eff an effect handler is defined using the `handler`
+construct and can handle any number of effects whether they are related or not.
+In the above example `Get` and `Put` are two separate effects that are handled
+as a whole by the `state` effect handler. Here we have taken some liberty to
+annotate the types of the Eff statements in a pseudo Haskell-like syntax
+extended with the effect row notation `!{}`. Note that these are not actual type
+signatures as the constructs are not regular functions in Eff.
+
+  - The `state` effect handler have the conceptual type somewhere along the
+    line of `forall a ε . Int -> (() -> a!{Get, Put | ε}) -> (() -> a!{|ε})`.
+    It means given an initial state of type `Int`, and a computation thunk
+    `() -> a!{Get, Put | ε}` that would produce an effectful value of type `a`
+    that makes use of the effects `Get` and `Put` optionally with additional
+    effects `ε`, it returns a new computation thunk `(() -> a!{|ε})` that
+    no longer depends on the `Get` and `Put` effects when called.
+
+  - The second last handler statement `x -> (fun _ -> x)` is the return handler
+    with the effective type `a -> (Int -> a)`. It wraps a pure value of type `a`
+    into a context of type `(Int -> a)` so that the context can be built up and
+    get called with the initial state by the finalizer. We can notice this is
+    pretty much the same as how the `State` monad in Haskell implements the
+    monadic `return`.
+
+  - The first two handler statements handles the `Get` and `Put` effects.
+    They get access to the continuation `k` as the second argument. The handlers
+    extend the original context built up by the return handler and return a new
+    `Int -> a` in its result. There may be potential confusion when we then
+    try to determine the type of `k`. The first argument to `k` is the type of
+    the result of an effectful operation - `Int` for `Get` and `()` for `Put`.
+    But the result type of `k` is the context returned from the return handler,
+    `Int -> a`. In other words, the `Get` and `Put` effect handlers create a
+    new context `Int -> a`, which accepts for the current state value then calls
+    the continuation to get the inner context and then pass the new state to it.
+
+  - The finalizer in the `finally` statement extracts the final result out of
+    the state context `g` of type `Int -> a` by calling it with the initial state
+    `initial`. This is how we get back our computation result `a` and is akin to
+    `evalState` of the `State` monad in Haskell.
+
 ## References
 
   - [Effects bibliography](https://github.com/yallop/effects-bibliography), Jeremy Yallop
