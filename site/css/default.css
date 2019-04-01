@@ -6,7 +6,7 @@ html {
 }
 
 body {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-family: 'Open Sans', san-serif;
   color: #000;
   min-width: 300px;
@@ -84,14 +84,11 @@ code {
 
 p code, li code {
   background-color: rgb(250,250,250);
-  border: 1px solid rgb(200,200,200);
-  padding-left: 4px;
-  padding-right: 4px;
   white-space: nowrap;
 }
 
 p {
-  line-height: 1.5;
+  line-height: 1.8;
 }
 
 @media (max-width: 319px) {

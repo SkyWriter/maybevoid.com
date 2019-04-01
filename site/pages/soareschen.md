@@ -20,9 +20,9 @@ There are many things that excites me and I am still learning a lot every day.
 I started MaybeVoid to share the things I learned, and also to connect to
 the broader programming language community around the world.
 
-To pay my bills while still learning things, I spent my day time doing functional
-programming in JavaScript. This will hopefully change soon when I start my first
-Haskell job in a few months time.
+I really enjoy coding in Haskell, and would love to explore career opportunities
+in Haskell or related works. If you would like to get in touch, do
+[drop me an email](mailto:soares.chen@maybevoid.com)
 
 ## Contact
 

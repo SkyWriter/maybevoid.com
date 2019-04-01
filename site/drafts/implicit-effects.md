@@ -579,7 +579,7 @@ handled or result in unhandled effect handler.
 We can see from earlier example that with built in language constructs for
 effects, we can express effects more elegantly in Eff than in Haskell. However
 the full advantage of algebraic effects in Eff is not just the syntactic
-constructs, but also new ways` of structuring our code to solve different
+constructs, but also new ways of structuring our code to solve different
 problems. One particular strength is the access to the continuation `k` in
 our effect handlers. Since we have access to the continuation, we can choose
 to resume it more than one times, or discard the continuation and halting the
