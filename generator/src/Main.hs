@@ -35,6 +35,7 @@ main = hakyllWith config $ do
 
   match "robots.txt" copyFiles
   match "images/*" copyFiles
+  match "pdf/*" copyFiles
 
   match "posts/*" $ do
     route $ setExtension "html"

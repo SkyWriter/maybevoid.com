@@ -51,6 +51,7 @@ h2 {
 
 h3 {
   font-size: 1.5rem;
+  margin-bottom: 0;
 }
 
 article .header {
@@ -76,8 +77,6 @@ article .header {
 
 .overview {
   padding: 0 2em;
-  text-align: center;
-  font-size: 0.9em;
 }
 
 code {
@@ -91,6 +90,7 @@ p code, li code {
 
 p {
   line-height: 1.8;
+  margin: 0.5em 0;
 }
 
 @media (max-width: 319px) {

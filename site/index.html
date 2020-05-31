@@ -4,14 +4,10 @@ title: Home
 
 <div class="overview">
   <p>
-    MaybeVoid is the personal site for <a href="/pages/soareschen.html">Soares Chen</a>.
-    I blog about functional programming in languages including
-    <a href="/wiki/haskell.html"><i>Haskell</i></a>,
-    <i>Racket</i>, <i>OCaml</i>, <i>Rust</i>. I also write about
-    research topics in
-    <a href="/wiki/programming-language-theory.html">programming language theory</a>
-    including <i>Type Theory</i>, <i>Algebraic
-    Effects</i>, <i>Linear Types</i>, and <i>Formal Verification</i>.
+    Welcome to <a href="/pages/soareschen.html">Soares Chen</a>'s homepage MaybeVoid.
+    My interest is in functional programming (Haskell, Rust, Ocaml, etc), and
+    programming language research (dependent types algebraic effects, row polymorphism,
+    session types, etc).
   </p>
   <p>
     In general, if you understands how the Haskell type <code>Maybe Void</code>
@@ -25,20 +21,60 @@ title: Home
   </i></p>
 </div>
 
+<a href="https://github.com/maybevoid">
 <h2>Projects</h2>
+</a>
 
-<h3>
-  <a href="https://github.com/maybevoid/implicit-effects">
-    Implicit Effects
-  </a>
-</h3>
+<section id="project-casimir">
+  <h3>
+    <a href="https://github.com/maybevoid/casimir">
+      Casimir
+    </a>
+  </h3>
 
-<p>
-  Implictit Effects is a new effects library for Haskell that implements
-  algebraic effects using implicit parameters and constraint kinds. The
-  project is currently in draft state, with the code mostly ready and me
-  still working on the documentation.
-</p>
+  <p>
+    Effects library in Haskell supporting both algebraic effects (free monad)
+    and mtl-style effects.
+  </p>
+</section>
+
+<section id="project-ferrite">
+  <h3>
+    <a href="https://github.com/maybevoid/ferrite">
+      Ferrite
+    </a>
+  </h3>
+
+  <p>
+    Session type EDSL in Rust, supporting both linear and shared session types.
+    <a href="/pdf/ferrite-draft-2020.pdf">Draft paper</a>
+  </p>
+</section>
+
+<section id="project-quasi-params">
+  <h3>
+    <a href="https://github.com/maybevoid/quasi-params">
+      Quasi Params
+    </a>
+  </h3>
+
+  <p>
+    Better implicit parameters in Haskell.
+  </p>
+</section>
+
+<section id="project-dabble">
+  <h3>
+    <a href="https://github.com/maybevoid/dabble">
+      Dabble
+    </a>
+  </h3>
+
+  <p>
+    Row polymorphism library in Haskell.
+  </p>
+</section>
+
 
 <h2>Recent Posts</h2>
 $partial("templates/post-list.html")$

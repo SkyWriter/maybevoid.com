@@ -13,6 +13,6 @@ executable generate-site
   main-is:          Main.hs
   hs-source-dirs:   src
   build-depends:    base == 4.*
-                  , hakyll == 4.12.*
+                  , hakyll
   ghc-options:      -threaded
   default-language: Haskell2010
